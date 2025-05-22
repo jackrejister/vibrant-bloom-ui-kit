@@ -1,86 +1,48 @@
 
-import { forwardRef } from "react";
-import { cn } from "@/lib/utils";
-import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-const cardVariants = cva(
-  "rounded-lg border bg-card text-card-foreground",
-  {
-    variants: {
-      variant: {
-        default: "shadow-sm",
-        elevated: "shadow-md",
-        flat: "border-2",
-        ghost: "border-0 shadow-none bg-transparent",
-        // Luminance custom variants
-        primary: "bg-luminance-primary-50 border-luminance-primary-200 dark:bg-luminance-primary-900/30 dark:border-luminance-primary-800",
-        teal: "bg-luminance-teal-50 border-luminance-teal-200 dark:bg-luminance-teal-900/30 dark:border-luminance-teal-800",
-        purple: "bg-luminance-purple-50 border-luminance-purple-200 dark:bg-luminance-purple-900/30 dark:border-luminance-purple-800",
-        amber: "bg-luminance-amber-50 border-luminance-amber-200 dark:bg-luminance-amber-900/30 dark:border-luminance-amber-800",
-        coral: "bg-luminance-coral-50 border-luminance-coral-200 dark:bg-luminance-coral-900/30 dark:border-luminance-coral-800",
-        mint: "bg-luminance-mint-50 border-luminance-mint-200 dark:bg-luminance-mint-900/30 dark:border-luminance-mint-800",
-        glass: "backdrop-blur-md bg-white/10 border border-white/20 dark:bg-black/10",
-      },
-      size: {
-        default: "p-6",
-        sm: "p-4",
-        lg: "p-8",
-        xl: "p-10",
-        none: "p-0",
-      },
-      rounded: {
-        default: "rounded-lg",
-        none: "rounded-none",
-        sm: "rounded",
-        md: "rounded-md",
-        lg: "rounded-lg",
-        xl: "rounded-xl",
-        "2xl": "rounded-2xl",
-        full: "rounded-full",
-      },
-      bordered: {
-        true: "border",
-        false: "border-0",
-      },
-      animation: {
-        none: "",
-        subtle: "transition-all duration-200",
-        hover: "transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
-        glow: "relative overflow-hidden transition-colors before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-r before:from-luminance-primary-300 before:to-luminance-teal-300 before:opacity-0 before:blur-xl before:transition-opacity hover:before:opacity-50",
-      }
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-      rounded: "default",
-      bordered: true,
-      animation: "none",
-    },
-  }
-);
+// Card variants
+const cardVariants = {
+  hover: {
+    scale: 1.02,
+    transition: { duration: 0.2 },
+  },
+  tap: {
+    scale: 0.98,
+  },
+};
 
-export interface CardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardVariants> {
-  asChild?: boolean;
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   useMotion?: boolean;
 }
 
-const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, size, rounded, bordered, animation, asChild = false, useMotion = false, ...props }, ref) => {
-    const CardElement = useMotion ? motion.div : "div";
-    
-    const motionProps = useMotion ? {
-      whileHover: { y: -5, boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)" },
-      transition: { type: "spring", stiffness: 300, damping: 15 }
-    } : {};
-    
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, useMotion = false, ...props }, ref) => {
+    if (useMotion) {
+      return (
+        <motion.div
+          ref={ref as React.Ref<HTMLDivElement>}
+          className={cn(
+            "rounded-lg border bg-card text-card-foreground shadow-sm",
+            className
+          )}
+          whileHover="hover"
+          whileTap="tap"
+          variants={cardVariants}
+          {...props}
+        />
+      );
+    }
+
     return (
-      <CardElement
+      <div
         ref={ref}
-        className={cn(cardVariants({ variant, size, rounded, bordered, animation, className }))}
-        {...motionProps}
+        className={cn(
+          "rounded-lg border bg-card text-card-foreground shadow-sm",
+          className
+        )}
         {...props}
       />
     );
@@ -88,7 +50,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 );
 Card.displayName = "Card";
 
-const CardHeader = forwardRef<
+const CardHeader = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
@@ -100,19 +62,22 @@ const CardHeader = forwardRef<
 ));
 CardHeader.displayName = "CardHeader";
 
-const CardTitle = forwardRef<
+const CardTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
   <h3
     ref={ref}
-    className={cn("text-2xl font-semibold leading-none tracking-tight", className)}
+    className={cn(
+      "text-2xl font-semibold leading-none tracking-tight",
+      className
+    )}
     {...props}
   />
 ));
 CardTitle.displayName = "CardTitle";
 
-const CardDescription = forwardRef<
+const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
@@ -124,7 +89,7 @@ const CardDescription = forwardRef<
 ));
 CardDescription.displayName = "CardDescription";
 
-const CardContent = forwardRef<
+const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
@@ -132,7 +97,7 @@ const CardContent = forwardRef<
 ));
 CardContent.displayName = "CardContent";
 
-const CardFooter = forwardRef<
+const CardFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
@@ -144,4 +109,11 @@ const CardFooter = forwardRef<
 ));
 CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+};
