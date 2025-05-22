@@ -1,37 +1,61 @@
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { cva, type VariantProps } from "class-variance-authority";
+import { motion, HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-// Card variants
-const cardVariants = {
-  hover: {
-    scale: 1.02,
-    transition: { duration: 0.2 },
-  },
-  tap: {
-    scale: 0.98,
-  },
-};
+const cardVariants = cva(
+  "rounded-lg border border-border shadow-sm",
+  {
+    variants: {
+      variant: {
+        default: "bg-card text-card-foreground",
+        primary: "bg-luminance-primary-50 border-luminance-primary-200 dark:bg-luminance-primary-900/30 dark:border-luminance-primary-800",
+        secondary: "bg-luminance-teal-50 border-luminance-teal-200 dark:bg-luminance-teal-900/30 dark:border-luminance-teal-800",
+        accent: "bg-luminance-purple-50 border-luminance-purple-200 dark:bg-luminance-purple-900/30 dark:border-luminance-purple-800",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CardProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof cardVariants> {
   useMotion?: boolean;
 }
 
+interface MotionCardProps extends Omit<HTMLMotionProps<"div">, "className" | "children">,
+  VariantProps<typeof cardVariants> {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+const cardAnimationVariants = {
+  hover: {
+    y: -5,
+    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    transition: { duration: 0.2 }
+  },
+  tap: {
+    y: 0,
+    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    transition: { duration: 0.2 }
+  },
+};
+
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, useMotion = false, ...props }, ref) => {
+  ({ className, variant, useMotion = false, ...props }, ref) => {
     if (useMotion) {
       return (
         <motion.div
           ref={ref as React.Ref<HTMLDivElement>}
-          className={cn(
-            "rounded-lg border bg-card text-card-foreground shadow-sm",
-            className
-          )}
+          className={cn(cardVariants({ variant, className }))}
           whileHover="hover"
-          whileTap="tap"
-          variants={cardVariants}
-          {...props}
+          variants={cardAnimationVariants}
+          {...props as unknown as MotionCardProps}
         />
       );
     }
@@ -39,10 +63,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          "rounded-lg border bg-card text-card-foreground shadow-sm",
-          className
-        )}
+        className={cn(cardVariants({ variant, className }))}
         {...props}
       />
     );
@@ -50,6 +71,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
 );
 Card.displayName = "Card";
 
+// Card Header
 const CardHeader = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -62,6 +84,7 @@ const CardHeader = React.forwardRef<
 ));
 CardHeader.displayName = "CardHeader";
 
+// Card Title
 const CardTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
@@ -77,6 +100,7 @@ const CardTitle = React.forwardRef<
 ));
 CardTitle.displayName = "CardTitle";
 
+// Card Description
 const CardDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
@@ -89,6 +113,7 @@ const CardDescription = React.forwardRef<
 ));
 CardDescription.displayName = "CardDescription";
 
+// Card Content
 const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -97,6 +122,7 @@ const CardContent = React.forwardRef<
 ));
 CardContent.displayName = "CardContent";
 
+// Card Footer
 const CardFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -109,11 +135,4 @@ const CardFooter = React.forwardRef<
 ));
 CardFooter.displayName = "CardFooter";
 
-export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-  CardContent,
-};
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, cardVariants };

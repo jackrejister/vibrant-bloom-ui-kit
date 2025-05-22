@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { motion } from "framer-motion";
+import { motion, HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
@@ -47,6 +47,12 @@ export interface BadgeProps
   useMotion?: boolean;
 }
 
+interface MotionBadgeProps extends Omit<HTMLMotionProps<"div">, "className" | "children">, 
+  VariantProps<typeof badgeVariants> {
+  className?: string;
+  children?: React.ReactNode;
+}
+
 const badgeAnimationVariants = {
   hover: {
     scale: 1.05, 
@@ -73,7 +79,7 @@ function Badge({
         whileHover="hover"
         whileTap="tap"
         variants={badgeAnimationVariants}
-        {...props}
+        {...props as MotionBadgeProps}
       />
     );
   }

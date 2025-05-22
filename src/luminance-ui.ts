@@ -8,8 +8,18 @@ export {
   CardFooter, 
   CardTitle, 
   CardDescription, 
-  CardContent
+  CardContent,
+  cardVariants
 } from "./components/ui/luminance-card";
+export { 
+  Form,
+  FormField,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+  formVariants
+} from "./components/ui/luminance-form";
 export { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs";
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "./components/ui/tooltip";
 export { Input } from "./components/ui/input";
@@ -45,6 +55,11 @@ export { toast, useToast } from "./hooks/use-toast";
 export { Toaster } from "./components/ui/toaster";
 export { Slider } from "./components/ui/slider";
 export { Progress } from "./components/ui/progress";
+export { 
+  Collapsible, 
+  CollapsibleTrigger, 
+  CollapsibleContent 
+} from "./components/ui/collapsible";
 
 // Provider exports
 export { LuminanceProvider } from "./components/LuminanceProvider";

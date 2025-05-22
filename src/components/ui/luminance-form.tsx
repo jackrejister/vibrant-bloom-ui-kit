@@ -1,161 +1,141 @@
 
 import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { motion, HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { motion } from "framer-motion";
 
-// Form wrapper component
-interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
+const formVariants = cva("space-y-6", {
+  variants: {
+    variant: {
+      default: "",
+      bordered: "border p-6 rounded-lg",
+      card: "bg-card text-card-foreground border rounded-lg p-6 shadow-sm",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+export interface FormProps
+  extends React.FormHTMLAttributes<HTMLFormElement>,
+    VariantProps<typeof formVariants> {
   useMotion?: boolean;
 }
 
+interface MotionFormProps extends Omit<HTMLMotionProps<"form">, "className" | "children">,
+  VariantProps<typeof formVariants> {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+const formAnimationVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { 
+      duration: 0.4,
+      staggerChildren: 0.1
+    }
+  }
+};
+
 const Form = React.forwardRef<HTMLFormElement, FormProps>(
-  ({ className, useMotion = false, ...props }, ref) => {
+  ({ className, variant, useMotion = false, children, ...props }, ref) => {
     if (useMotion) {
       return (
         <motion.form
+          className={cn(formVariants({ variant, className }))}
           ref={ref as React.Ref<HTMLFormElement>}
-          className={cn("space-y-6", className)}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-          {...props}
-        />
+          initial="hidden"
+          animate="visible"
+          variants={formAnimationVariants}
+          {...props as unknown as MotionFormProps}
+        >
+          {children}
+        </motion.form>
       );
     }
-    
+
     return (
       <form
+        className={cn(formVariants({ variant, className }))}
         ref={ref}
-        className={cn("space-y-6", className)}
         {...props}
-      />
+      >
+        {children}
+      </form>
     );
   }
 );
 Form.displayName = "Form";
 
-// Form group component
-interface FormGroupProps extends React.HTMLAttributes<HTMLDivElement> {
-  error?: string;
-}
+// Form Field
+const FormField = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("space-y-2", className)} {...props} />
+));
+FormField.displayName = "FormField";
 
-const FormGroup = React.forwardRef<HTMLDivElement, FormGroupProps>(
-  ({ className, error, children, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn("space-y-2", className)}
-      {...props}
-    >
-      {children}
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
-      )}
-    </div>
-  )
-);
-FormGroup.displayName = "FormGroup";
+// Form Label
+const FormLabel = React.forwardRef<
+  HTMLLabelElement,
+  React.LabelHTMLAttributes<HTMLLabelElement>
+>(({ className, ...props }, ref) => (
+  <label
+    ref={ref}
+    className={cn("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70", className)}
+    {...props}
+  />
+));
+FormLabel.displayName = "FormLabel";
 
-// Form label component
-const FormLabel = Label;
-
-// Form control wrapper
-interface FormControlProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-const FormControl = React.forwardRef<HTMLDivElement, FormControlProps>(
-  ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn("mt-1", className)}
-      {...props}
-    />
-  )
-);
+// Form Control
+const FormControl = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("mt-2", className)} {...props} />
+));
 FormControl.displayName = "FormControl";
 
-// Form input component
-const FormInput = Input;
+// Form Description
+const FormDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
+));
+FormDescription.displayName = "FormDescription";
 
-// Form validation error message
-interface FormErrorProps extends React.HTMLAttributes<HTMLParagraphElement> {}
-
-const FormError = React.forwardRef<HTMLParagraphElement, FormErrorProps>(
-  ({ className, ...props }, ref) => (
-    <p
-      ref={ref}
-      className={cn("text-sm text-destructive mt-1", className)}
-      {...props}
-    />
-  )
-);
-FormError.displayName = "FormError";
-
-// Form helper text
-interface FormHelperProps extends React.HTMLAttributes<HTMLParagraphElement> {}
-
-const FormHelper = React.forwardRef<HTMLParagraphElement, FormHelperProps>(
-  ({ className, ...props }, ref) => (
-    <p
-      ref={ref}
-      className={cn("text-sm text-muted-foreground mt-1", className)}
-      {...props}
-    />
-  )
-);
-FormHelper.displayName = "FormHelper";
-
-// Form actions row
-interface FormActionsProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-const FormActions = React.forwardRef<HTMLDivElement, FormActionsProps>(
-  ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn("flex items-center justify-end gap-4 pt-4", className)}
-      {...props}
-    />
-  )
-);
-FormActions.displayName = "FormActions";
-
-// Form section with title and description
-interface FormSectionProps extends React.HTMLAttributes<HTMLDivElement> {
-  title?: string;
-  description?: string;
-}
-
-const FormSection = React.forwardRef<HTMLDivElement, FormSectionProps>(
-  ({ className, title, description, children, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn("space-y-4", className)}
-      {...props}
-    >
-      {(title || description) && (
-        <div className="space-y-1">
-          {title && (
-            <h3 className="text-lg font-medium">{title}</h3>
-          )}
-          {description && (
-            <p className="text-sm text-muted-foreground">{description}</p>
-          )}
-        </div>
-      )}
-      {children}
-    </div>
-  )
-);
-FormSection.displayName = "FormSection";
+// Form Message
+const FormMessage = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, children, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn("text-sm font-medium text-destructive", className)}
+    {...props}
+  >
+    {children}
+  </p>
+));
+FormMessage.displayName = "FormMessage";
 
 export {
   Form,
-  FormGroup,
+  FormField,
   FormLabel,
   FormControl,
-  FormInput,
-  FormError,
-  FormHelper,
-  FormActions,
-  FormSection,
+  FormDescription,
+  FormMessage,
+  formVariants
 };

@@ -35,13 +35,13 @@
 ## Installation
 
 ```bash
-npm install luminance-ui
+npm install luminance-ui framer-motion
 ```
 
 or
 
 ```bash
-yarn add luminance-ui
+yarn add luminance-ui framer-motion
 ```
 
 ## Quick Start
@@ -49,7 +49,7 @@ yarn add luminance-ui
 ```jsx
 import React from 'react';
 import { LuminanceProvider } from 'luminance-ui';
-import { Button } from 'luminance-ui/button';
+import { Button } from 'luminance-ui';
 
 const App = () => {
   return (
@@ -68,15 +68,34 @@ export default App;
 
 Luminance UI includes a wide range of components:
 
-- Buttons
-- Cards
-- Badges
-- Form inputs
-- Tabs
-- Accordions
-- Modals
-- Toasts
-- And much more!
+### Basic Components
+- **Button**: Multiple variants, sizes, with optional icons and animations
+- **Badge**: Status indicators with various styles and colors
+- **Card**: Flexible container for grouping related content
+
+### Form Components
+- **Form**: Structured forms with animated transitions
+- **Input**: Text input fields with customizable styling
+- **Checkbox**: Interactive checkboxes for boolean selections
+- **Select**: Dropdown menus for selecting options
+- **Switch**: Toggle switches for binary options
+
+### Navigation Components
+- **Tabs**: Tabbed interface for content organization
+- **Accordion**: Collapsible content sections
+
+### Data Display
+- **Avatar**: User profile pictures with fallback support
+- **Progress**: Visualize progress of tasks and operations
+- **Slider**: Range selection control
+
+### Feedback Components
+- **Toast**: Notifications that appear temporarily
+- **Tooltip**: Informational text that appears on hover
+
+### Layout Components
+- **Carousel**: Slideshow for cycling through elements
+- **Separator**: Visual dividers between content
 
 ## Theming
 
@@ -102,6 +121,112 @@ function App() {
     >
       {/* Your application */}
     </LuminanceProvider>
+  );
+}
+```
+
+## Component Examples
+
+### Button Component
+
+```jsx
+import { Button } from 'luminance-ui';
+import { Star } from 'lucide-react';
+
+export function ButtonExample() {
+  return (
+    <div className="flex space-x-4">
+      <Button variant="primary">Primary</Button>
+      <Button variant="secondary">Secondary</Button>
+      <Button variant="accent">Accent</Button>
+      <Button variant="outline">Outline</Button>
+      <Button variant="primary" leftIcon={<Star className="w-4 h-4" />}>
+        With Icon
+      </Button>
+      <Button variant="primary" useMotion={true}>
+        With Animation
+      </Button>
+    </div>
+  );
+}
+```
+
+### Form Component
+
+```jsx
+import { Form, FormField, FormLabel, FormControl, FormDescription, FormMessage, Input, Button } from 'luminance-ui';
+
+export function FormExample() {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Form handling logic
+  };
+
+  return (
+    <Form variant="card" onSubmit={handleSubmit} useMotion={true}>
+      <FormField>
+        <FormLabel>Email</FormLabel>
+        <FormControl>
+          <Input type="email" placeholder="Enter your email" />
+        </FormControl>
+        <FormDescription>We'll never share your email.</FormDescription>
+      </FormField>
+      
+      <FormField>
+        <FormLabel>Password</FormLabel>
+        <FormControl>
+          <Input type="password" placeholder="Enter your password" />
+        </FormControl>
+        <FormMessage>Password must be at least 8 characters.</FormMessage>
+      </FormField>
+      
+      <Button type="submit" variant="primary">Submit</Button>
+    </Form>
+  );
+}
+```
+
+### Card Component
+
+```jsx
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Button } from 'luminance-ui';
+
+export function CardExample() {
+  return (
+    <Card variant="primary" useMotion={true}>
+      <CardHeader>
+        <CardTitle>Feature Card</CardTitle>
+        <CardDescription>This is a description of the feature</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p>This card contains content about a specific feature. The card can be animated with Framer Motion.</p>
+      </CardContent>
+      <CardFooter>
+        <Button variant="primary">Learn More</Button>
+      </CardFooter>
+    </Card>
+  );
+}
+```
+
+### Toast Usage
+
+```jsx
+import { Button, toast } from 'luminance-ui';
+
+export function ToastExample() {
+  const showToast = () => {
+    toast({
+      title: "Success!",
+      description: "Your action was completed successfully.",
+      variant: "success",
+    });
+  };
+
+  return (
+    <Button onClick={showToast}>
+      Show Toast
+    </Button>
   );
 }
 ```
