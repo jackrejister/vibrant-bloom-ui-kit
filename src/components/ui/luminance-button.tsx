@@ -45,12 +45,16 @@ export interface ButtonProps
   useMotion?: boolean;
 }
 
-interface MotionButtonProps extends Omit<HTMLMotionProps<"button">, "className" | "children">, 
-  VariantProps<typeof buttonVariants> {
+// Define a more specific type for motion buttons
+interface MotionButtonProps extends Omit<HTMLMotionProps<"button">, keyof VariantProps<typeof buttonVariants>> {
   className?: string;
   children?: React.ReactNode;
+  variant?: VariantProps<typeof buttonVariants>["variant"];
+  size?: VariantProps<typeof buttonVariants>["size"];
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  disabled?: boolean;
+  type?: "button" | "submit" | "reset";
 }
 
 const buttonAnimationVariants = {
@@ -76,15 +80,20 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
     
     if (useMotion) {
+      // Create a motion props object with only the properties that motion.button accepts
+      const motionProps: MotionButtonProps = {
+        className: cn(buttonVariants({ variant, size, className })),
+        whileHover: "hover",
+        whileTap: "tap",
+        variants: buttonAnimationVariants,
+        leftIcon,
+        rightIcon,
+        ref,
+        ...props as any // Cast to any as a workaround for type incompatibility
+      };
+      
       return (
-        <motion.button
-          className={cn(buttonVariants({ variant, size, className }))}
-          ref={ref}
-          whileHover="hover"
-          whileTap="tap"
-          variants={buttonAnimationVariants}
-          {...props as MotionButtonProps}
-        >
+        <motion.button {...motionProps}>
           {buttonContent}
         </motion.button>
       );

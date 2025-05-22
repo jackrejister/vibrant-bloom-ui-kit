@@ -47,10 +47,12 @@ export interface BadgeProps
   useMotion?: boolean;
 }
 
-interface MotionBadgeProps extends Omit<HTMLMotionProps<"div">, "className" | "children">, 
-  VariantProps<typeof badgeVariants> {
+// Define a more specific type for motion badges
+interface MotionBadgeProps extends Omit<HTMLMotionProps<"div">, keyof VariantProps<typeof badgeVariants>> {
   className?: string;
   children?: React.ReactNode;
+  variant?: VariantProps<typeof badgeVariants>["variant"];
+  size?: VariantProps<typeof badgeVariants>["size"];
 }
 
 const badgeAnimationVariants = {
@@ -73,15 +75,16 @@ function Badge({
 }: BadgeProps) {
   
   if (useMotion) {
-    return (
-      <motion.div
-        className={cn(badgeVariants({ variant, size, className }))}
-        whileHover="hover"
-        whileTap="tap"
-        variants={badgeAnimationVariants}
-        {...props as MotionBadgeProps}
-      />
-    );
+    // Create a motion props object with only the properties that motion.div accepts
+    const motionProps: MotionBadgeProps = {
+      className: cn(badgeVariants({ variant, size, className })),
+      whileHover: "hover",
+      whileTap: "tap",
+      variants: badgeAnimationVariants,
+      ...props as any // Cast to any as a workaround for type incompatibility
+    };
+    
+    return <motion.div {...motionProps} />;
   }
   
   return (
