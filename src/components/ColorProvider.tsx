@@ -1,7 +1,7 @@
 
 import { createContext, useContext } from "react";
 
-type ColorPalette = {
+export type ColorPalette = {
   primary?: string;
   secondary?: string;
   accent?: string;
